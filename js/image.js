@@ -18,6 +18,7 @@ imgWorker(id, url, mask, responseComments) {
             domOperations.finder('.mask').parentElement.removeChild(domOperations.finder('.mask'));
             domOperations.finder('.canvas').parentElement.removeChild(domOperations.finder('.canvas'));
             domOperations.finder('.canvasHelper').parentElement.removeChild(domOperations.finder('.canvasHelper'));
+            comments.stop();
             domOperations.finder('.commentsContainer').parentElement.removeChild(domOperations.finder('.commentsContainer'));
         }
 
