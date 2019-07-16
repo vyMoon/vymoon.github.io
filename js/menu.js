@@ -85,10 +85,12 @@ menuWorker(event) {
         domOperations.error = false;
         domOperations.finder('.error').style.display = 'none';
     }
+    
+    comments.newCommentsDeleter();
 
     if (event.target.classList.contains('burger') || event.target.parentElement.classList.contains('burger')) {
         menu.showMainItem();
-        comments.newCommentsDeleter();
+        
         // removes events listeners
         // comments.stop()
         painting.stopPaint();
