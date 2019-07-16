@@ -12,7 +12,6 @@ imgWorker(id, url, mask, responseComments) {
         // if there is a picture on the page
         // deletes img comments container canvases
         if (domOperations.finder('.current-image')) {
-            
             image.image.parentElement.removeChild(image.image);
             
             domOperations.finder('.mask').parentElement.removeChild(domOperations.finder('.mask'));
@@ -35,7 +34,8 @@ imgWorker(id, url, mask, responseComments) {
         app.insertBefore(domOperations.elementMaker('canvas', 'canvasHelper'), domOperations.errorElement );
         app.insertBefore(domOperations.elementMaker('canvas', 'canvas'), domOperations.errorElement );
         app.insertBefore(domOperations.structureMaker(structures.commentsContainer), domOperations.errorElement );
-
+        comments.start();
+        
         sessionStorage.id = id;
         menu.shareUrl.value = `${window.location.origin}?${id}`;    
     
