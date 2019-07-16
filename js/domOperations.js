@@ -191,7 +191,7 @@ start() {
                 menu.showCommentsItem();
                 menu.checkMenuSize();
 
-                domOperations.commentsStarter();
+                // domOperations.commentsStarter();
             }
         })
 
