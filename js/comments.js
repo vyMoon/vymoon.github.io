@@ -5,11 +5,11 @@
 const comments = {
 
 start() {
-    domOperations.finder('.commentsContainer').addEventListener('click', comments.worker);
+    domOperations.finder('.commentsContainer').addEventListener('click', comments.worker, true);
 },
 
 stop() {
-    domOperations.finder('.commentsContainer').removeEventListener('click', comments.worker);
+    domOperations.finder('.commentsContainer').removeEventListener('click', comments.worker, true);
 },
 
 commentAdder(top, left, message, timestamp) { // adds comment in page
@@ -91,10 +91,11 @@ formAppender(y, x) {
     comment.dataset.id = 'new';
     
     const commentCheckBox = domOperations.finder('.comments__marker-checkbox', comment);
-    commentCheckBox.addEventListener('click', comments.onlyOneOpenCommentBody)
-    
-    domOperations.finder('.commentsContainer').appendChild(comment);
+    console.log(commentCheckBox);
+    commentCheckBox.addEventListener('change', comments.onlyOneOpenCommentBody)
 
+    domOperations.finder('.commentsContainer').appendChild(comment);
+    
 },
 
 newCommentChecker(parametr = true) {
@@ -112,6 +113,7 @@ newCommentChecker(parametr = true) {
 
 onlyOneOpenCommentBody() {
     // closes body of all comments besides that which you use right now
+    // console.log('only one opent comment nody');
     comments.commentsFinder().forEach( el => {
         if (event.target !== domOperations.finder('.comments__marker-checkbox', el)) {
             if (el.dataset.id === 'new') {
@@ -125,7 +127,7 @@ onlyOneOpenCommentBody() {
             
             if (el.dataset.id === 'new') {
                 // если тело комментария только что создано, то его нельзя закрыть
-                //кликом на маркер
+                // кликом на маркер
                 domOperations.finder('.comments__marker-checkbox', el).checked = true;
             }
         }
