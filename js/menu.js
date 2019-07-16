@@ -85,8 +85,9 @@ menuWorker(event) {
         domOperations.error = false;
         domOperations.finder('.error').style.display = 'none';
     }
-    
-    comments.newCommentsDeleter();
+    if (!event.target.classList.contains('comments') || !event.target.parentElement.classList.contains('comments')) {
+        comments.newCommentsDeleter();
+    }
 
     if (event.target.classList.contains('burger') || event.target.parentElement.classList.contains('burger')) {
         menu.showMainItem();
