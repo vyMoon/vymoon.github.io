@@ -90,13 +90,14 @@ menuWorker(event) {
         menu.showMainItem();
         comments.newCommentsDeleter();
         // removes events listeners
-        comments.stop()
-        painting.stopPaint()
+        // comments.stop()
+        painting.stopPaint();
+        comments.start();
     }
 
     if (event.target.classList.contains('comments') || event.target.parentElement.classList.contains('comments')) {
         // adds event listeners
-        comments.start();
+        // comments.start();
         menu.elementsHiden();
         menu.showCommentsItem();
     }
@@ -105,6 +106,7 @@ menuWorker(event) {
         menu.elementsHiden();
         menu.showDrawItem();
         // adds events listeners
+        comments.stop();
         painting.paint();
     }
 
