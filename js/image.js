@@ -16,7 +16,7 @@ imgWorker(id, url, mask, responseComments) {
             
             domOperations.finder('.mask').parentElement.removeChild(domOperations.finder('.mask'));
             domOperations.finder('.canvas').parentElement.removeChild(domOperations.finder('.canvas'));
-            domOperations.finder('.canvasHelper').parentElement.removeChild(domOperations.finder('.canvasHelper'));
+            // domOperations.finder('.canvasHelper').parentElement.removeChild(domOperations.finder('.canvasHelper'));
             comments.stop();
             domOperations.finder('.commentsContainer').parentElement.removeChild(domOperations.finder('.commentsContainer'));
         }
@@ -31,7 +31,7 @@ imgWorker(id, url, mask, responseComments) {
        
         // creates commentsContainer, mask, canvases
         app.insertBefore(domOperations.elementMaker('img', 'mask'), domOperations.errorElement );
-        app.insertBefore(domOperations.elementMaker('canvas', 'canvasHelper'), domOperations.errorElement );
+        // app.insertBefore(domOperations.elementMaker('canvas', 'canvasHelper'), domOperations.errorElement );
         app.insertBefore(domOperations.elementMaker('canvas', 'canvas'), domOperations.errorElement );
         app.insertBefore(domOperations.structureMaker(structures.commentsContainer), domOperations.errorElement );
         comments.start();
@@ -44,7 +44,7 @@ imgWorker(id, url, mask, responseComments) {
             const imgBound = img.getBoundingClientRect();
             // // задает стили для холста и контейнера комментариев
             domOperations.elementStyler(domOperations.finder('.canvas'), imgBound);
-            domOperations.elementStyler(domOperations.finder('.canvasHelper'), imgBound);
+            // domOperations.elementStyler(domOperations.finder('.canvasHelper'), imgBound);
             domOperations.elementStyler(domOperations.finder('.commentsContainer'), imgBound);
             domOperations.finder('.commentsContainer').style.width = imgBound.width + 'px';
             domOperations.finder('.commentsContainer').style.height = imgBound.height + 'px';
@@ -75,7 +75,7 @@ imgWorker(id, url, mask, responseComments) {
     
 
             painting.ctx = domOperations.finder('.canvas').getContext('2d');
-            painting.ctxHelper = domOperations.finder('.canvasHelper').getContext('2d');
+            // painting.ctxHelper = domOperations.finder('.canvasHelper').getContext('2d');
 
         });
 },
