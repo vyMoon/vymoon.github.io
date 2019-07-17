@@ -114,7 +114,7 @@ tick () {
     if(painting.needsRepaint) {
 
         painting.ticker('ctx', '.canvas', painting.curves);
-        painting.ticker('ctxHelper', '.canvasHelper', painting.curvesHelper);
+        // painting.ticker('ctxHelper', '.canvasHelper', painting.curvesHelper);
 
         // const doodle = domOperations.finder('.canvas');
         // painting.ctx.clearRect(0, 0, doodle.width, doodle.height);
@@ -170,6 +170,7 @@ stopPaint() { // remones events listeners
     doodle.removeEventListener("mouseup", painting.canvasDrawingFalse);
     doodle.removeEventListener("mouseleave", painting.canvasDrawingFalse);
     doodle.removeEventListener("mousemove", painting.canvasMousemove);
+    // stops sending canvas
     clearInterval(painting.sender);
     // painting.tick();
 },
@@ -185,7 +186,7 @@ canvasMousedown(event) {
         
         curve.curve.push([event.offsetX, event.offsetY]);
         painting.curves.push(curve); 
-        painting.curvesHelper.push(curve);
+        // painting.curvesHelper.push(curve);
 
         painting.needsRepaint = true;
         painting.needsSend = true;
@@ -198,7 +199,7 @@ canvasMousemove(event) {
 
         const point = [event.offsetX, event.offsetY]
         painting.curves[painting.curves.length - 1].curve.push(point);
-        painting.curvesHelper[painting.curvesHelper.length - 1].curve.push(point);
+        // painting.curvesHelper[painting.curvesHelper.length - 1].curve.push(point);
         painting.needsRepaint = true;
 
     } else if (painting.drawing && event.currentTarget !== event.target) {
