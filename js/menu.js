@@ -86,7 +86,7 @@ menuWorker(event) {
         domOperations.finder('.error').style.display = 'none';
     }
     
-    if (domOperations.finder('.commentsContainer') {
+    if (domOperations.finder('.commentsContainer')) {
         comments.newCommentsDeleter();
     }
     
