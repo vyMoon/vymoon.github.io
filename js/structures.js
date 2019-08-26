@@ -98,7 +98,7 @@ commentsForm: {
                     classes: ['comments__input'],
                     atr: {
                         // type: 'text',
-                        placeholder: 'Напишите ответ...'
+                        placeholder: 'Write your aswer'
                     }
                 },
                 {
@@ -106,7 +106,7 @@ commentsForm: {
                     classes: ['comments__close'],
                     atr: {
                         type: 'button',
-                        value: 'Закрыть'
+                        value: 'Close'
                     }
                 },
                 {
@@ -114,7 +114,7 @@ commentsForm: {
                     classes: ['comments__submit'],
                     atr: {
                         type: 'submit',
-                        value: 'Отправить'
+                        value: 'Submit'
                     }
                 }
             ]
