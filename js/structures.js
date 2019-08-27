@@ -1,5 +1,5 @@
 'use strict';
-// console.log('str')
+
 const structures = {
 input: {
     type: 'div',
@@ -97,8 +97,7 @@ commentsForm: {
                     type: 'textarea',
                     classes: ['comments__input'],
                     atr: {
-                        // type: 'text',
-                        placeholder: 'Write your aswer'
+                        placeholder: 'Напишите ответ...'
                     }
                 },
                 {
@@ -106,7 +105,7 @@ commentsForm: {
                     classes: ['comments__close'],
                     atr: {
                         type: 'button',
-                        value: 'Close'
+                        value: 'Закрыть'
                     }
                 },
                 {
@@ -114,7 +113,7 @@ commentsForm: {
                     classes: ['comments__submit'],
                     atr: {
                         type: 'submit',
-                        value: 'Submit'
+                        value: 'Отправить'
                     }
                 }
             ]
