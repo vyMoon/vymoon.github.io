@@ -1,10 +1,6 @@
-'use strict';
-
-// console.log('menu');
-
 const menu = {
 
-// меню и его элементы
+// menu items
 menu: domOperations.finder('.menu'),
 
 burger: domOperations.finder('.burger', this.menu),
@@ -22,12 +18,12 @@ shareTools: domOperations.finder('.share-tools', this.menu),
 shareUrl: domOperations.finder('.menu__url', this.shareTools),
 shareCopyButton: domOperations.finder('.menu_copy', this.shareTools),
 
-// инпуты для смены цвета рисования
+// inputs for changing colors of painting
 colorInputs: domOperations.finderAll('.menu__color', this.drawTools ), 
 
-////////////////////////работа меню////////////////////////////////////////////////////////
+////////////////////////menu works////////////////////////////////////////////////////////
 
-// скрывает все элементы меню
+// hide aoo items of the menu
 elementsHiden() {
     menu.new.style.display = 'none';
     menu.draw.style.display = 'none';
@@ -39,7 +35,7 @@ elementsHiden() {
     menu.commentsTools.style.display = 'none';  
 },
 
-// показывает только главные элементы меню
+// shows main elements
 showMainItem() {
     menu.elementsHiden()
     menu.new.style.display = 'inline-block';
@@ -54,7 +50,7 @@ showShareItem() {
     menu.burger.style.display = 'inline-block';
     menu.shareTools.style.display = 'inline-block';
 },
-// shows commnts elements
+// shows comments elements
 showCommentsItem() {
     menu.elementsHiden();
     menu.burger.style.display = 'inline-block';
@@ -67,7 +63,7 @@ showDrawItem() {
     menu.burger.style.display = 'inline-block';
     menu.drawTools.style.display = 'inline-block';
 },
-// shows downlosd new picture wlwmwnt
+// shows element for uploading a picture
 startCondition() {
     menu.elementsHiden();
     menu.new.style.display = 'inline-block';
@@ -78,47 +74,49 @@ startCondition() {
     }
 },
 
-// обрабатывает клики по элментам меню
+
+// handles menu clicks
 menuWorker(event) {
-    // if shows the error element hides it
+    // if the error is shown it hides the error
     if (domOperations.error) {
         domOperations.error = false;
         domOperations.finder('.error').style.display = 'none';
     }
 
     if (event.target.classList.contains('burger') || event.target.parentElement.classList.contains('burger')) {
+        //hides items and shows main items
+        //stops painting and starts comenting
         menu.showMainItem();
         comments.newCommentsDeleter();
-        // removes events listeners
-        // comments.stop()
         painting.stopPaint();
         comments.start();
     }
 
     if (event.target.classList.contains('comments') || event.target.parentElement.classList.contains('comments')) {
-        // adds event listeners
-        // comments.start();
+        // shows comment items
         menu.elementsHiden();
         menu.showCommentsItem();
     }
 
     if (event.target.classList.contains('draw') || event.target.parentElement.classList.contains('draw')) {
+        // shoes painting items
+        // starts painting
         menu.elementsHiden();
         menu.showDrawItem();
-        // adds events listeners
         comments.stop();
         painting.paint();
     }
 
     if (event.target.classList.contains('share') || event.target.parentElement.classList.contains('share')) {
+        // shows share item
         menu.showShareItem();
     }
 
-    // проверяет влазит ли меню в окно при необходимости корректирует положение
+    // checks the size of the menu and if the menu go out from the screen move the menu
     menu.checkMenuSize();
 
     if (event.target.classList.contains('new') || event.target.parentElement.classList.contains('new')) {
-        // ищем инпут и кликаем его
+        // if the click on the upload item clock a virtual input.
         const input = domOperations.finder('input', domOperations.finder('.inputContainer'));
         input.click();
     }
@@ -131,10 +129,9 @@ shiftX: 0,
 shiftY: 0,
 
 isItMenu(event) {
-    // проверяет произошел ли клик на элементе, закоторый претаскиваем меню
-    // если да, то заполняем вспомогательные переменные
-    // сдвиг по осям для пердовращения скачков при перетаскивании
-    // и сам перетаскиваемый элемент
+    // if click on the moveing menu element
+    // starts to move the menu
+    // memorize the click point to stop menu jumping
     if (event.target.classList.contains('drag')) {
 
         menu.moved = event.target.parentElement;
@@ -150,14 +147,13 @@ menuMover(event) {
         event.preventDefault();
 
         const menuX = event.pageX - menu.shiftX; // координата верхней левой точки
-        // максимально возможная коррдината х чтобы менбю не вышло за пределы окна
+        // the max x coord to keep menu on the screen
         const xMax = document.documentElement.clientWidth - Math.ceil(menu.moved.getBoundingClientRect().width);
-        // выбираем меньшую точку
+        // choses the min coord
         const x = Math.min(menuX, xMax);
-        // передвигаем меню в выбранну точку при этом проверяем чтобы оно не вышло за пределы окна
+        // moves the menu and checks its size
         menu.moved.style.left = (x > 0) ? x + 'px' : 0 + 'px';
 
-        // аналогично с координатой у
         const menuY = event.pageY - menu.shiftY; 
         const yMax = document.documentElement.clientHeight - menu.moved.offsetHeight;
         const y = Math.min(menuY, yMax);
@@ -166,7 +162,7 @@ menuMover(event) {
     }
 },
 
-// закнчиваем двигать меню 
+// stops move the menu
 stopMenuMove() {
     if (menu.moved) {
         menu.moved = undefined;
@@ -177,19 +173,18 @@ stopMenuMove() {
     localStorage.menuY = menuBound.y;
 },
 
-// изменяет положение меню, если при изменении вида меню, оно перстает влаpить в размеры документа по правому краю
+// checks the menu size
 checkMenuSize() {
-    // вычисляем размер меню без бордеров
+    // counts the menu size
     const menuWidth = Array.from(menu.menu.children).reduce( (memo, el) => {
         memo += el.getBoundingClientRect().width;
         return memo;
     }, 0);
     const menuBound = menu.menu.getBoundingClientRect();
-    //вычисляем размер бордеров
+    //counts the menu borders size
     const bordersWidth = parseInt(getComputedStyle(menu.menu).borderLeftWidth) + parseInt(getComputedStyle(menu.menu).borderRightWidth);
-    //проверяем выходит ли меню за пределы окна
+    //checks if the menu has gone out of the screen and stores it on the screen
     if ( Math.ceil(menu.menu.getBoundingClientRect().x + menuWidth + bordersWidth) > document.documentElement.offsetWidth) {
-        //  если выходит, то передвигаем влево на минимальное безопасное расстояние
         menu.menu.style.left = document.documentElement.offsetWidth - Math.ceil(menuWidth) - bordersWidth + 'px';
     }
     if (menu.menu.getBoundingClientRect().x < 0) {
