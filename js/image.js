@@ -1,7 +1,3 @@
-'use strict';
-
-// console.log('img');
-
 const image = {
 
 get image() {
@@ -16,7 +12,7 @@ imgWorker(id, url, mask, responseComments) {
             
             domOperations.finder('.mask').parentElement.removeChild(domOperations.finder('.mask'));
             domOperations.finder('.canvas').parentElement.removeChild(domOperations.finder('.canvas'));
-            // domOperations.finder('.canvasHelper').parentElement.removeChild(domOperations.finder('.canvasHelper'));
+            
             comments.stop();
             domOperations.finder('.commentsContainer').parentElement.removeChild(domOperations.finder('.commentsContainer'));
         }
@@ -31,9 +27,9 @@ imgWorker(id, url, mask, responseComments) {
        
         // creates commentsContainer, mask, canvases
         app.insertBefore(domOperations.elementMaker('img', 'mask'), domOperations.errorElement );
-        // app.insertBefore(domOperations.elementMaker('canvas', 'canvasHelper'), domOperations.errorElement );
         app.insertBefore(domOperations.elementMaker('canvas', 'canvas'), domOperations.errorElement );
         app.insertBefore(domOperations.structureMaker(structures.commentsContainer), domOperations.errorElement );
+
         comments.start();
         
         sessionStorage.id = id;
@@ -42,9 +38,8 @@ imgWorker(id, url, mask, responseComments) {
         img.addEventListener('load', function() {
 
             const imgBound = img.getBoundingClientRect();
-            // // задает стили для холста и контейнера комментариев
+            // styles elements
             domOperations.elementStyler(domOperations.finder('.canvas'), imgBound);
-            // domOperations.elementStyler(domOperations.finder('.canvasHelper'), imgBound);
             domOperations.elementStyler(domOperations.finder('.commentsContainer'), imgBound);
             domOperations.finder('.commentsContainer').style.width = imgBound.width + 'px';
             domOperations.finder('.commentsContainer').style.height = imgBound.height + 'px';
@@ -72,10 +67,9 @@ imgWorker(id, url, mask, responseComments) {
                 domOperations.elementStyler(domOperations.finder('.mask'), imgBound);
                 domOperations.finder('.mask').src = mask;
             }
-    
-
+            
+            // gets 2d context for painting
             painting.ctx = domOperations.finder('.canvas').getContext('2d');
-            // painting.ctxHelper = domOperations.finder('.canvasHelper').getContext('2d');
 
         });
 },
@@ -83,52 +77,55 @@ imgWorker(id, url, mask, responseComments) {
 imgLoad(file) {
 
     domOperations.errorHider();
-    // domOperations.finder('.error').style.display = 'none';
 
-    // регулярное выражение для проверки файла
+    // regexp for cheking downloaded file
     const imageTypeRegExp = /^image\//;
     // if the file attached
     if (imageTypeRegExp.test(file.type)) {
 
-        // формирование форм даты для отправки
+        // makes formdata for sending the picture
         const imgFormData = new FormData();
         imgFormData.append('title', file.name);
         imgFormData.append('image', file);
 
-        // отправляет изобразение
+        // sends the picture
         let imgXML = new XMLHttpRequest();
         imgXML.open('POST', 'https://neto-api.herokuapp.com/pic/');
-        // показывает - скрывает лоадер при загрузке изображения
+        
+        // shows and hides preloader 
         imgXML.addEventListener('loadstart', () => domOperations.finder('.image-loader').style.display = 'block');
         imgXML.addEventListener('loadend', () => domOperations.finder('.image-loader').style.display = 'none');
+        // if the reaponse is wrong shows the mistake
         imgXML.addEventListener('error', () => {
-
             domOperations.errorShower(domOperations.serverErrorMessage)
-
         } );
 
         imgXML.addEventListener('load', function() {
 
             domOperations.ready = false;
 
-            // очищаем холст, удаляет комментарии
+            // cleans the canvas and deletes comments
             painting.canvasCleaner();
 
             if (imgXML.status === 200) {
                 sessionStorage.prepare = true;
                 const response = JSON.parse(imgXML.responseText);
-                // отображает изображение. открывает нужные пункты меню
+            
+                // loads the picture and shows menu items
                 menu.showShareItem();
                 menu.checkMenuSize();
 
+                //memirizes id of picture and makes url for sharing
                 sessionStorage.id = response.id;
                 menu.shareUrl.value = `${window.location.origin}?${response.id}`;
-                // открыывает вэб соккет
+
+                // opens web socket
                 linkage.wsClose();
                 linkage.wsOpen();
                 
             }
-            // отображает ошлибку
+            
+            // if false shoews the message
             if (imgXML.status >= 500) {
 
                 domOperations.errorShower(domOperations.serverErrorMessage)
@@ -138,20 +135,20 @@ imgLoad(file) {
 
         imgXML.send(imgFormData);       
 
-    } else { // иначе осталяем тольок пункт меню загрузить и выводим ошибку
+    } else { //shows the error message
         domOperations.errorShower(domOperations.typeErrorMessage);
     }
 
 },
 
 imgLoadDrop(event) {
-    event.preventDefault();                             // предовращаем открытие
+    event.preventDefault();                             // forbides browser open a picture
     
     if (!image.image) {
-        const file = event.dataTransfer.files[0];       // получаем файл
-        image.imgLoad(file);                            // отображаем файл
+        const file = event.dataTransfer.files[0];       // obtains the file
+        image.imgLoad(file);                            // shows the file
     } else {
-        // отображает ошибку, если файл не  того типа
+        // if type of the file is wrong shoes the error message
         domOperations.errorShower(domOperations.behaviorErrorMessage);
     }
 }
