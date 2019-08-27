@@ -1,49 +1,54 @@
-'use strict';
-
-// console.log('comments')
-
 const comments = {
 
-start() {
-    domOperations.finder('.commentsContainer').addEventListener('click', comments.worker, true);
+commenting: false,
+
+start() { // stops commenting
+    if (!comments.commenting) {
+        domOperations.finder('.commentsContainer').addEventListener('click', comments.worker, true);
+        comments.commenting = true;
+    }
 },
 
-stop() {
-    domOperations.finder('.commentsContainer').removeEventListener('click', comments.worker, true);
+stop() { // sterts commenting
+    if (comments.commenting) { 
+        domOperations.finder('.commentsContainer').removeEventListener('click', comments.worker, true);
+        comments.commenting = false;
+    }
 },
 
 commentAdder(top, left, message, timestamp) { // adds comment in page
 
-    // ищем форму, в которую нужно давить комментария
+    // finds the comment form for the comment
     const currenComment = comments.commentsFinder().find( el => {
         if (parseInt(el.style.top) === top && parseInt(el.style.left) === left) {
             return true;
         }
     })
 
-    // если нашли
+    // if  the comment form was found
     if (currenComment) {
         
-        currenComment.dataset.id = 'active';                       // помечаем форму как активную
-        const dateStr = domOperations.dateMaker(timestamp);        // получаем струку с датой нужного формата
+        currenComment.dataset.id = 'active';                       // marks the form as active
+        const dateStr = domOperations.dateMaker(timestamp);        // makes the data string
 
-        // в тело комеентария вставляем комментарий перед лоадером, тоесть как последний на данный момент
+        // adds the comment in the comments form before comments preloader
+        // so this comment will be displayed as the last comment
         domOperations.finder('.comments__body', currenComment) 
             .insertBefore( 
                 domOperations.commentMaker(dateStr, message), domOperations.loaderFinder( domOperations.finder('.comments__body', currenComment)
             ));
         domOperations.finder('.comments__marker-checkbox', currenComment).checked = true;
 
-        // и оставляем открытый только свежий комментарий
+        // the comment form which got the comment should be only one one opened form
+        // it closes anothers forms
         comments.commentsFinder().forEach( el => {
             if (el !== currenComment) {
                 domOperations.finder('.comments__marker-checkbox', el).checked = false;
             } 
         })
     } else { 
-        // иначе создаем форму комментария в нужном месте
-        // и запускам еще раз для добавления первого комментария
-        // нужно в том случае, если функция используется при загрузке по ссылке или при обновлении страницы
+        // if the form wasn't found it creates the form
+        // and run the function again to add first comment
         comments.formAppender(top, left);
         comments.commentAdder(top, left, message, timestamp);
     }
@@ -59,21 +64,21 @@ commentMaker(date, message) {
 
 },
 
-// показывает все комментарии
+// shows all comments
 commentsShower() {
     comments.commentsFinder().forEach( el => {
         el.style.display = 'block';
     })
 },
 
-// скрывает все комментарии
+// hides all comments
 commentsHider() {
     comments.commentsFinder().forEach( el => {
         el.style.display = 'none';
     })
 },
 
-commentsFinder() { // returns array of all comments from comments container
+commentsFinder() { // returns array of all comments from the comments container
 
     return domOperations.finderAll('.comments__form', domOperations.finder('.commentsContainer'));
 
@@ -81,7 +86,7 @@ commentsFinder() { // returns array of all comments from comments container
 
 formAppender(y, x) {
 
-    // creates form for the comments styles it and put it to page
+    // creates form for the comments styles it and put it to the commnt container
     const comment = domOperations.structureMaker(structures.commentsForm);
     comment.style.display = 'block';
     comment.style.position = 'absolute';
@@ -91,7 +96,7 @@ formAppender(y, x) {
     comment.dataset.id = 'new';
     
     const commentCheckBox = domOperations.finder('.comments__marker-checkbox', comment);
-    console.log(commentCheckBox);
+    //add event listener for comment marker
     commentCheckBox.addEventListener('change', comments.onlyOneOpenCommentBody)
 
     domOperations.finder('.commentsContainer').appendChild(comment);
@@ -112,8 +117,8 @@ newCommentChecker(parametr = true) {
 },
 
 onlyOneOpenCommentBody() {
-    // closes body of all comments besides that which you use right now
-    // console.log('only one opent comment nody');
+    // closes bodies of all comments besides that which you use right now
+    
     comments.commentsFinder().forEach( el => {
         if (event.target !== domOperations.finder('.comments__marker-checkbox', el)) {
             if (el.dataset.id === 'new') {
@@ -126,15 +131,14 @@ onlyOneOpenCommentBody() {
             el.style.zIndex = 1;
             
             if (el.dataset.id === 'new') {
-                // если тело комментария только что создано, то его нельзя закрыть
-                // кликом на маркер
+                // if the comments form has no comments we can't close it by clck on marker
                 domOperations.finder('.comments__marker-checkbox', el).checked = true;
             }
         }
     })
 },
 
-newCommentsDeleter() { // deletes new commnts form from page
+newCommentsDeleter() { // deletes new comment form if it has no comments. It has dataset-id = new
     comments.commentsFinder().forEach( el => {
         if( el.dataset.id === 'new') {
             el.parentElement.removeChild(el);
@@ -142,20 +146,20 @@ newCommentsDeleter() { // deletes new commnts form from page
     })
 },
 
-worker(event) { // handles clicks on the commnts container
+worker(event) { // proces clicks on the comments container
     event.stopPropagation();
-    // // добавляет форму комментария, если клик на контейнере
+    // if click on comment container adds comment form
     if (event.currentTarget === event.target) {
-        // закрывает комментарии
+        // closes all comments
         comments.newCommentChecker();
-        // добавляет форму
+        // adds the comment form
         comments.formAppender(event.offsetY, event.offsetX);
 
     }
     
     if (event.target.classList.contains('comments__close')) {
-       // если клик на кнопке закрыть форму комментария, если комментарий не активный, то удаляет его
-       // если активный то сворачивает форму
+       // click on the close button of the comments form deletrs this form if it has no comments
+       // if it has a comment the clock close this form
         if (event.target.parentElement.parentElement.dataset.id === 'new') {
             event.target.parentElement.parentElement.parentElement.removeChild(event.target.parentElement.parentElement);
         } else {
@@ -165,15 +169,16 @@ worker(event) { // handles clicks on the commnts container
     }
 
     if (event.target.classList.contains('comments__submit')) {
-        // при клике на  кнопке отправить, если введен комментарий - отправляет его
+        // the click on the submit button is sends the comment if anything is typed
         event.preventDefault();
-        
+        // gets the comment text
         const commentText = domOperations.finder('.comments__input', event.target.parentElement).value.trim();
         
         if (commentText !== '') {
 
             const y = parseInt(event.target.parentElement.parentElement.style.top);
             const x = parseInt(event.target.parentElement.parentElement.style.left);
+            //makes the get request
             const body = `message=${commentText}&left=${x}&top=${y}`;
 
             const messageXHR = new XMLHttpRequest();
@@ -183,7 +188,7 @@ worker(event) { // handles clicks on the commnts container
             
             messageXHR.open('POST', url);
             messageXHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
+            // shows and hides the comment preloader
             messageXHR.addEventListener('loadstart', () => {
                 domOperations.finder('.comments__input', event.target.parentElement).value = '';
                 loader.style.display = 'block';
