@@ -1,17 +1,20 @@
-'use strict';
-
 const domOperations = {
 
 ready: false,
 error: false,
 
-get errorElement() {
+get errorElement() { // returns the error container
     return domOperations.finder('.error');
 },
 
-typeErrorMessage: 'Неверный формат файла. Пожалуйста, выберите изображение в формате .jpg или .png.',
-serverErrorMessage: 'Что то пошло не так!! Попробуйте позже',
-behaviorErrorMessage: 'Для загрузки нового изображения нужно воспользовать пунктом меню  "ЗАГРУЗИТЬ НОВОЕ"',
+// textes of errors messages
+// typeErrorMessage: 'Неверный формат файла. Пожалуйста, выберите изображение в формате .jpg или .png.',
+// serverErrorMessage: 'Что то пошло не так!! Попробуйте позже',
+// behaviorErrorMessage: 'Для загрузки нового изображения нужно воспользовать пунктом меню  "ЗАГРУЗИТЬ НОВОЕ"',
+
+typeErrorMessage: 'Wrong file format. Please chose .jpg or .png file.',
+serverErrorMessage: 'Something goes wrong. Please will try later',
+behaviorErrorMessage: 'For uploading the picture use the menu item "UPLOAD NEW"',
 
 commentMaker(date, message) { // create an comment element
 
@@ -33,8 +36,7 @@ dateMaker(timestamp) {  // create apropriate date string
     return `${date.getDate()}.${mounth}.${('' + date.getFullYear()).slice(2)} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 },
 
-// функция поиска элементов на странице
-// принимает класс и контэйнер
+// looks for elements on the page
 finder(needle, container) {
     
     if (container !== undefined) {
@@ -44,8 +46,7 @@ finder(needle, container) {
 
 },
 
-// ищет и возвращает массив этмл элементов
-// принимает класс и контэйнер
+// looks for elements on the page
 finderAll(needle, container) {
 
     if (container !== undefined) {
@@ -55,7 +56,7 @@ finderAll(needle, container) {
 
 },
 
-loaderFinder(constainer) {  // finds the loader element in form element
+loaderFinder(constainer) {  // finds the loader element in the form element
 
     return domOperations.finderAll( '.comment', constainer).find( el => {
         if (el.firstElementChild.classList.contains('loader')) {
@@ -75,7 +76,7 @@ elementMaker(tag, ...classes) {  // creates an element and add claesses if they 
 
 },
 
-elementStyler(element, imgBound) {  // appliea styles to passed element
+elementStyler(element, imgBound) {  //  styles a passed element
     element.style.position = 'absolute';
     element.style.display = 'block';
     element.width = imgBound.width;
@@ -88,14 +89,14 @@ elementStyler(element, imgBound) {  // appliea styles to passed element
 structureMaker(el, container) {  //creates complicated element
 
     const my = document.createElement(el.type);
-
+    // adds classes if they are
     if (el.classes && Array.isArray(el.classes)) {
         
         el.classes.forEach( el => {
             my.classList.add(el);
         })
     }
-
+    // adds atributes if they are
     if (el.atr && typeof el.atr === 'object') {
         
         const keys = Object.keys(el.atr);
@@ -104,7 +105,7 @@ structureMaker(el, container) {  //creates complicated element
         });
         
     }
-
+    // styles the elements if it needs
     if (el.styles && typeof el.styles === 'object') {
 
         const keys = Object.keys(el.styles);
@@ -112,14 +113,14 @@ structureMaker(el, container) {  //creates complicated element
             my.style[stlName] = el.styles[stlName];
         })
     }
-
+    // creates children if they exist
     if (el.children && Array.isArray(el.children)) {
 
         el.children.forEach( el => {
             domOperations.structureMaker(el, my);
         })
     }
-
+    // put the elemnt to the container if it passed or returns element
     if (container !== undefined) {
         container.appendChild(my);
     } else {
@@ -128,7 +129,7 @@ structureMaker(el, container) {  //creates complicated element
 
 },
 
-errorShower(message) {  // finde the error element and shows it
+errorShower(message) {  // finds the error element and shows it
     domOperations.error = true;
     domOperations.finder('.error__message').innerText = message;
     domOperations.finder('.error').style.display = 'block';
@@ -138,19 +139,8 @@ errorHider() {
     domOperations.finder('.error').style.display = 'none';
 },
 
-commentsStarter() {  // adds eventlisteners to comments container after load pictures, waits comments contaener if need
-    if(domOperations.finder('.commentsContainer')) {
-        // console.log('comments container found')
-        comments.start()
-    } else {
-        // console.log('we need wait');
-        setTimeout(domOperations.commentsStarter, 500)
-    }
-},
-
 start() {
-    // console.log('dom start');
-    // чистим страницу, чтобы не было отображено лишнее
+    //cleans the page
     domOperations.finder('.comments__form').style.display = 'none';
 
     const img = domOperations.finder('.current-image');
@@ -161,11 +151,11 @@ start() {
     domOperations.structureMaker(structures.input, domOperations.finder('.app'));
     domOperations.finder('.input').addEventListener('change', function(event) {
         event.stopPropagation();
-        const file = event.currentTarget.files[0];  // получаем файл
-        image.imgLoad(file);                              // отображаем файл
+        const file = event.currentTarget.files[0];        // abtain the file
+        image.imgLoad(file);                              // shows the file
     });
 
-    // if there is an id of picture in the GET or in the LocalStorage it should open this picture
+    // if there is the id of the picture in the GET request or in the LocalStorage opens the picture by this id
     const id = window.location.search.slice(1) || sessionStorage.id;
 
     if (id) {
@@ -180,14 +170,14 @@ start() {
             if (xhr.status === 200) {
                 
                 const response = JSON.parse(xhr.responseText);
-                // console.log(response);
 
                 sessionStorage.id = response.id;
+                //makes the link for sharing
                 menu.shareUrl.value = `${window.location.origin}?${response.id}`;
 
-                // открыывает вэб соккет
+                // opens web socket
                 linkage.wsOpen();
-
+                //shows the menu items
                 menu.showCommentsItem();
                 menu.checkMenuSize();
 
